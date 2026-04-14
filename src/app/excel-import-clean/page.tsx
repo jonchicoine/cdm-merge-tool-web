@@ -800,7 +800,6 @@ export default function ExcelImportCleanPage() {
                     value={fileOps.activeMasterTab}
                     onChange={(_, newValue) => fileOps.handleMasterTabChange(newValue)}
                     sx={{ mb: 1 }}
-                    size="small"
                   >
                     {fileOps.masterSheetNames.map((sheetName, index) => (
                       <Tab key={index} label={sheetName} />
@@ -850,7 +849,6 @@ export default function ExcelImportCleanPage() {
                     value={fileOps.activeClientTab}
                     onChange={(_, newValue) => fileOps.handleClientTabChange(newValue)}
                     sx={{ mb: 1 }}
-                    size="small"
                   >
                     {fileOps.clientSheetNames.map((sheetName, index) => (
                       <Tab key={index} label={sheetName} />
