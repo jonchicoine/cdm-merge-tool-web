@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
-import { Box, Typography, Snackbar, Alert, Button, Tooltip } from "@mui/material";
+import { Box, Typography, Snackbar, Alert, Button, Tooltip, Tabs, Tab } from "@mui/material";
 import { useRouter } from "next/navigation";
 import dynamic from 'next/dynamic';
 
@@ -794,18 +794,32 @@ export default function ExcelImportCleanPage() {
                 onDrop={handleDrop("Master")}
               />
             ) : (
-              <DataGridSection
-                title="📄 Master Data"
-                rows={fileOps.rowsMaster}
-                columns={fileOps.columnsMaster}
-                gridType="master"
-                fileMetadata={fileOps.masterFileMetadata}
-                onRowUpdate={handleMasterRowUpdateWithRecompare}
-                enableRowActions={true}
-                onEditRow={handleMasterClientEdit}
-                onCreateNewFromRow={handleMasterClientCreate}
-                onDeleteRow={handleMasterClientDelete}
-              />
+              <>
+                {fileOps.masterSheetNames.length > 0 && (
+                  <Tabs
+                    value={fileOps.activeMasterTab}
+                    onChange={(_, newValue) => fileOps.handleMasterTabChange(newValue)}
+                    sx={{ mb: 1 }}
+                    size="small"
+                  >
+                    {fileOps.masterSheetNames.map((sheetName, index) => (
+                      <Tab key={index} label={sheetName} />
+                    ))}
+                  </Tabs>
+                )}
+                <DataGridSection
+                  title="📄 Master Data"
+                  rows={fileOps.rowsMaster}
+                  columns={fileOps.columnsMaster}
+                  gridType="master"
+                  fileMetadata={fileOps.masterFileMetadata}
+                  onRowUpdate={handleMasterRowUpdateWithRecompare}
+                  enableRowActions={true}
+                  onEditRow={handleMasterClientEdit}
+                  onCreateNewFromRow={handleMasterClientCreate}
+                  onDeleteRow={handleMasterClientDelete}
+                />
+              </>
             )}
           </Box>
 
@@ -830,18 +844,32 @@ export default function ExcelImportCleanPage() {
                 onDrop={handleDrop("Client")}
               />
             ) : (
-              <DataGridSection
-                title="📋 Client Data"
-                rows={fileOps.rowsClient}
-                columns={fileOps.columnsClient}
-                gridType="client"
-                fileMetadata={fileOps.clientFileMetadata}
-                onRowUpdate={handleClientRowUpdateWithRecompare}
-                enableRowActions={true}
-                onEditRow={handleMasterClientEdit}
-                onCreateNewFromRow={handleMasterClientCreate}
-                onDeleteRow={handleMasterClientDelete}
-              />
+              <>
+                {fileOps.clientSheetNames.length > 0 && (
+                  <Tabs
+                    value={fileOps.activeClientTab}
+                    onChange={(_, newValue) => fileOps.handleClientTabChange(newValue)}
+                    sx={{ mb: 1 }}
+                    size="small"
+                  >
+                    {fileOps.clientSheetNames.map((sheetName, index) => (
+                      <Tab key={index} label={sheetName} />
+                    ))}
+                  </Tabs>
+                )}
+                <DataGridSection
+                  title="📋 Client Data"
+                  rows={fileOps.rowsClient}
+                  columns={fileOps.columnsClient}
+                  gridType="client"
+                  fileMetadata={fileOps.clientFileMetadata}
+                  onRowUpdate={handleClientRowUpdateWithRecompare}
+                  enableRowActions={true}
+                  onEditRow={handleMasterClientEdit}
+                  onCreateNewFromRow={handleMasterClientCreate}
+                  onDeleteRow={handleMasterClientDelete}
+                />
+              </>
             )}
           </Box>
         </Box>
