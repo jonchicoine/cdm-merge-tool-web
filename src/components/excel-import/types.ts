@@ -81,13 +81,9 @@ export interface WelcomeSectionProps {
   // Action button props
   showActionButtons?: boolean;
   resetMenuAnchor?: HTMLElement | null;
-  settingsMenuAnchor?: HTMLElement | null;
   onResetMenuClick?: (event: React.MouseEvent<HTMLElement>) => void;
   onResetMenuClose?: () => void;
-  onSettingsMenuClick?: (event: React.MouseEvent<HTMLElement>) => void;
-  onSettingsMenuClose?: () => void;
   onResetAction?: (type: 'master' | 'client' | 'both') => void;
-  onModifierSettings?: () => void;
   hasMasterData?: boolean;
   hasClientData?: boolean;
 }

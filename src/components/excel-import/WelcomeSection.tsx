@@ -9,13 +9,9 @@ const WelcomeSection: React.FC<WelcomeSectionProps> = ({
   // Action button props
   showActionButtons = false,
   resetMenuAnchor,
-  settingsMenuAnchor,
   onResetMenuClick,
   onResetMenuClose,
-  onSettingsMenuClick,
-  onSettingsMenuClose,
   onResetAction,
-  onModifierSettings,
   hasMasterData = false,
   hasClientData = false
 }) => {
@@ -154,32 +150,6 @@ const WelcomeSection: React.FC<WelcomeSectionProps> = ({
                 🔄 Reset Both
               </MenuItem>
             </Menu>
-
-            {/* Settings Dropdown - Only show when both files are loaded */}
-            {hasMasterData && hasClientData && (
-              <>
-                <ButtonGroup variant="outlined" size="small">
-                  <Tooltip title="Application settings and preferences" arrow>
-                    <Button
-                      onClick={onSettingsMenuClick}
-                      endIcon={<ArrowDropDownIcon />}
-                      sx={{ fontSize: '0.75rem', py: 0.25, px: 1 }}
-                    >
-                      ⚙️ Settings
-                    </Button>
-                  </Tooltip>
-                </ButtonGroup>
-                <Menu
-                  anchorEl={settingsMenuAnchor}
-                  open={Boolean(settingsMenuAnchor)}
-                  onClose={onSettingsMenuClose}
-                >
-                  <MenuItem onClick={onModifierSettings}>
-                    🔧 Adjust Modifier Criteria
-                  </MenuItem>
-                </Menu>
-              </>
-            )}
           </>
         )}
       </Box>

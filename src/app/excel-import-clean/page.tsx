@@ -23,14 +23,11 @@ const DataGridSection = dynamic(() => import("../../components/excel-import/Data
 const ComparisonResults = dynamic(() => import("../../components/excel-import/ComparisonResults"), {
   loading: () => <Box sx={{ p: 2 }}><Typography>Loading...</Typography></Box>
 });
-const ModifierCriteriaDialog = dynamic(() => import("../../components/excel-import/ModifierCriteriaDialog"));
+import ModifierPanel from "../../components/excel-import/ModifierPanel";
 const ImprovedRowEditModal = dynamic(() => import("../../components/excel-import/ImprovedRowEditModal"));
 
 export default function ExcelImportCleanPage() {
   const router = useRouter();
-
-  // Simple loading state to defer heavy components
-  const [isLoaded, setIsLoaded] = useState(false);
 
   // Toggle for hyphen insertion algorithm (false = old algorithm, true = new algorithm)
   const [useNewHyphenAlgorithm, setUseNewHyphenAlgorithm] = useState(false);
@@ -39,14 +36,8 @@ export default function ExcelImportCleanPage() {
   const fileOps = useFileOperations(useNewHyphenAlgorithm);
   const comparison = useComparison();
 
-  // Defer loading heavy components
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // UI state
-  const [modifierDialogOpen, setModifierDialogOpen] = useState(false);
+  // UI state - panel pinned state is managed by ModifierPanel via localStorage
+  const [modifierPanelPinned, setModifierPanelPinned] = useState(true);
   // Note: Removed isLoadingSharedData state - pages are now independent
 
   // Restore session state
@@ -70,7 +61,6 @@ export default function ExcelImportCleanPage() {
     severity: 'info'
   });
   const [resetMenuAnchor, setResetMenuAnchor] = useState<null | HTMLElement>(null);
-  const [settingsMenuAnchor, setSettingsMenuAnchor] = useState<null | HTMLElement>(null);
   const [modifierCriteria, setModifierCriteria] = useState<ModifierCriteria>({
     root00: false,
     root25: false,
@@ -163,8 +153,8 @@ export default function ExcelImportCleanPage() {
     fileOps.columnsMaster,
     fileOps.columnsClient,
     modifierCriteria,
+    comparison.performComparison,
     comparison.showCompare,
-    comparison
   ]);
 
   // Drag and drop handlers
@@ -243,10 +233,7 @@ export default function ExcelImportCleanPage() {
     }
   }, [fileOps, showNotification, setLastMasterFile, setLastMasterData, setLastClientFile, setLastClientData]);
 
-  // Close dialog handler (comparison happens automatically)
-  const handleStartComparison = () => {
-    setModifierDialogOpen(false);
-  };
+
 
   // Enhanced handlers with loading states and notifications
   const handleLoadSampleDataWithFeedback = useCallback(async (sampleSet: number = 1) => {
@@ -655,28 +642,13 @@ export default function ExcelImportCleanPage() {
     setEditModalTitle('');
   };
 
-  if (!isLoaded) {
-    return (
-      <Box sx={{
-        p: 2,
-        background: 'linear-gradient(135deg, #f8fbff 0%, #e3f2fd 50%, #f0f8ff 100%)',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <Typography variant="h4" sx={{ color: '#1976d2' }}>
-          🔧 VIC CDM MERGE TOOL
-        </Typography>
-      </Box>
-    );
-  }
-
   return (
     <Box sx={{
       p: 2,
       background: 'linear-gradient(135deg, #f8fbff 0%, #e3f2fd 50%, #f0f8ff 100%)',
-      minHeight: '100vh'
+      minHeight: '100vh',
+      mr: modifierPanelPinned ? '280px' : 0,
+      transition: 'margin-right 0.3s ease',
     }}>
 
 
@@ -686,18 +658,11 @@ export default function ExcelImportCleanPage() {
           isLoading={isLoadingSample}
           showActionButtons={true}
           resetMenuAnchor={resetMenuAnchor}
-          settingsMenuAnchor={settingsMenuAnchor}
           onResetMenuClick={(event) => setResetMenuAnchor(event.currentTarget)}
           onResetMenuClose={() => setResetMenuAnchor(null)}
-          onSettingsMenuClick={(event) => setSettingsMenuAnchor(event.currentTarget)}
-          onSettingsMenuClose={() => setSettingsMenuAnchor(null)}
           onResetAction={(type) => {
             handleResetWithFeedback(type);
             setResetMenuAnchor(null);
-          }}
-          onModifierSettings={() => {
-            setModifierDialogOpen(true);
-            setSettingsMenuAnchor(null);
           }}
           hasMasterData={fileOps.rowsMaster.length > 0}
           hasClientData={fileOps.rowsClient.length > 0}
@@ -896,15 +861,11 @@ export default function ExcelImportCleanPage() {
           </Box>
         )}
 
-        {/* Modifier Criteria Dialog */}
-        <ModifierCriteriaDialog
-          open={modifierDialogOpen}
+        {/* Modifier Criteria Panel */}
+        <ModifierPanel
           criteria={modifierCriteria}
-          onClose={() => setModifierDialogOpen(false)}
           onCriteriaChange={setModifierCriteria}
-          onStartComparison={handleStartComparison}
-          useNewHyphenAlgorithm={useNewHyphenAlgorithm}
-          onHyphenAlgorithmChange={setUseNewHyphenAlgorithm}
+          onPinnedChange={setModifierPanelPinned}
         />
 
         {/* Row Edit Modal */}
